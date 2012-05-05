@@ -1,7 +1,9 @@
 #ifndef Queue_Manager_H
 #define Queue_Manager_H
+
 #include <deque>
 #include "structures.h"
+#include "smartalloc.h"
 
 #define NUM_SEM 			3
 #define SEM_MUTEX 		    0
@@ -11,7 +13,7 @@
 class Queue_Manager
 {
 private:
-    std::deque <struct packet_info *> *m_queue;
+    SMA::deque <struct packet_info *> *m_queue;
     sem_t *m_semaphores[3];
 
 public: 

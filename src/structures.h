@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <bitset>
 #include "Queue_Manager.h"
+#include "smartalloc.h"
 
 /*Ports and Protocols */ 
 #define DNS_REQEST 		0
@@ -23,7 +24,7 @@
 struct packet_info {
     unsigned char *packet;
     uint16_t size;
-    struct sockaddr_in *client;
+    struct sockaddr_in6 *client;
 }__attribute__((packed));
 
 struct sender_args {
@@ -56,14 +57,18 @@ struct dns_header{
     uint16_t codesFlags;
     uint16_t totalQuestions;
     uint16_t totalAnswers;
-    uint16_t totalNS;
-    uint16_t totalAR;
+    uint16_t totalAuthority;
+    uint16_t totalAdditional;
 }__attribute__((packed));
 
 struct dns_question {
-    std::vector<std::string> **qnames;
+    SMA::vector<SMA::string> **qnames;
     uint16_t qtype;
     uint16_t qclass;
+}__attribute__((packed));
+
+struct dns_answer {
+    SMA::vector<SMA::string> **qnames;
 }__attribute__((packed));
 
 struct dns_info {
@@ -99,13 +104,44 @@ enum rcode {
 };
 
 struct dns_record {
+    u_char *domain_name;
+    uint16_t classt;
     rcode type;
-    std::string domain_name;
-    uint16_t ttl;
+    uint16_t ttl; 
+    uint16_t data_len;
+
+    uint16_t time_in;
 };
 
-/*struct a_record : dns_record {
-    int val;
-};*/
+struct a_record : dns_record {
+    uint32_t ip_address;
+};
+
+struct ns_record : dns_record {
+    char *name_server_name;
+};
+
+struct cname_record : dns_record {
+    char *canonical_name;
+};
+
+struct soa_record : dns_record {
+    char *m_name;
+    char *r_name;
+    uint32_t serial;
+    uint32_t refresh;
+    uint32_t retry;
+    uint32_t expire;
+    uint32_t min_ttl;
+};
+
+struct ptr_record : dns_record {
+    char *ptr_domain;
+};
+
+struct mx_record : dns_record { 
+    char *mail_exchange;    
+};
+
 
 #endif 

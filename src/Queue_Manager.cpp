@@ -1,25 +1,27 @@
 #include "Queue_Manager.h"
+using namespace SMA;
 
 Queue_Manager::Queue_Manager() 
-    : m_queue(new std::deque<struct packet_info *>())
+    : m_queue(new SMA::deque<struct packet_info *>())
 {
-	 if ((m_semaphores[SEM_MUTEX] = sem_open("21ablock", O_CREAT, 0644, 1)) == SEM_FAILED) {
+	 if ((m_semaphores[SEM_MUTEX] = sem_open("34211ablock", O_CREAT, 0644, 1)) == SEM_FAILED) {
 		  perror("Semaphore full initialization");
 	 }
 
- 	 if ((m_semaphores[SEM_EMPTY] = sem_open("22balock", O_CREAT, 0644, MAX_PACKET_CT)) == SEM_FAILED) {
+ 	 if ((m_semaphores[SEM_EMPTY] = sem_open("34211balock", O_CREAT, 0644, MAX_PACKET_CT)) == SEM_FAILED) {
 	 	  perror("Semaphore full initialization");
 	 } 
 
-	 if ((m_semaphores[SEM_FULL] = sem_open("23cblock", O_CREAT, 0644, 0)) == SEM_FAILED) {
+	 if ((m_semaphores[SEM_FULL] = sem_open("34211cblock", O_CREAT, 0644, 0)) == SEM_FAILED) {
 		  perror("Semaphore full initialization");
     }  
 }
 
 Queue_Manager::~Queue_Manager() {
-   sem_close(m_semaphores[SEM_MUTEX]);
+    sem_close(m_semaphores[SEM_MUTEX]);
 	sem_close(m_semaphores[SEM_EMPTY]);
 	sem_close(m_semaphores[SEM_FULL]);
+    delete m_queue;
 }
 
 void Queue_Manager::enque(struct packet_info *pkt_info) {

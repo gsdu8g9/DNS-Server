@@ -1,5 +1,6 @@
 #include "DNS_Server.h"
 #include "Queue_Manager.h"
+#include "smartalloc.h"
 
 int main(int argc, char **argv) {
     DNS_Server *dns_application = new DNS_Server();

@@ -10,22 +10,22 @@ void *Reciever_Task::reciever_run(void *args){
     Queue_Manager *queue_manager = (Queue_Manager *)args;
     int socketfd;
     int packet_len;
-
+    queue_manager->size();
     unsigned char *pkt_buf = (u_char *)calloc(MAX_DNS_LEN, 1);	
 
-    struct sockaddr_in saddr, saddr_client;
+    struct sockaddr_in6 saddr, saddr_client;
     socklen_t client_len = sizeof(saddr_client);
 
-    if ((socketfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP)) == -1) {
+    if ((socketfd = socket(PF_INET6, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
         fprintf(stderr, "Error creating socket!\n");
         return (void *)-1;
     }
     memset((char *) &saddr, 0, sizeof(saddr));
     memset((char *) &saddr_client, 0, sizeof(saddr_client));
     
-    saddr.sin_family = AF_INET;
-    saddr.sin_port = htons(PORT_DNS);
-    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    saddr.sin6_family = PF_INET6;
+    saddr.sin6_port = htons(PORT_DNS);
+    saddr.sin6_addr = in6addr_any;
     if (bind(socketfd, (struct sockaddr *)&saddr, sizeof(saddr))==-1) {
         fprintf(stderr, "xbind");
         return (void *)-1;
@@ -36,16 +36,17 @@ void *Reciever_Task::reciever_run(void *args){
         current_info->packet = pkt_buf;
         current_info->size = packet_len; 
         current_info->client = &saddr_client;
+        fprintf(stderr, "Enqueued Packet\n");
         queue_manager->enque(current_info);    
-        pkt_buf = (u_char *)calloc(MAX_DNS_LEN, 1);	
+        pkt_buf = (u_char *)calloc(MAX_DNS_LEN, 1);
     }
 
 	printf("listener done");
 
-  free(pkt_buf);
+    free(pkt_buf);
 
 	close(socketfd);
-   return (void *)0;
+    return (void *)0;
 }
 
 void Reciever_Task::print_buf(u_char *buf, int size) {
@@ -54,12 +55,3 @@ void Reciever_Task::print_buf(u_char *buf, int size) {
         fprintf(stderr, "%x ", buf[i]);
 }
 
-int Reciever_Task::create_listener_socket() {
-    int sockfd;
-
-    if ((sockfd = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-        perror("Error creating listening socket\n");
-        return -1;
-    }
-    return sockfd;
-}

@@ -2,6 +2,7 @@
 #define Reciever_Task_H
 
 #include "net_includes.h"
+#include "smartalloc.h"
 //#include "structures.h"
 
 class Reciever_Task 

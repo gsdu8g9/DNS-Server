@@ -2,6 +2,7 @@
 #define DNS_Server_H
 
 #include "structures.h"
+#include "smartalloc.h"
 #include "Cache_Manager.h"
 #include "Reciever_Task.h"
 #include "Sender_Task.h"
