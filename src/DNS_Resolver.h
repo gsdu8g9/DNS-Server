@@ -4,27 +4,33 @@
 #include "structures.h"
 #include "Sender_Task.h"
 #include "smartalloc.h"
+#include "DNS_Parser.h"
 
 using namespace SMA;
 
 #define ROOT_SERVERS_LEN 	13
 #define NUM_FLAGS 			8
-#define DEFAULT_TIMEOUT     2
 class DNS_Resolver
 {
 private:
     Sender_Task *m_senderTask;
+    DNS_Parser *m_dnsParser;
     int m_currentSocket;
-    struct sockaddr_in6 *m_currentAddr;
+    packet_info *m_query;
 
-    vector<string> **build_label_vector(int); 
-    dns_info *parse_response(packet_info *); 
-    u_char *parse_question(dns_header *, vector<dns_question *> *);
-    u_char *parse_answers(dns_header *, u_char *, vector<dns_record*> *, vector<dns_record *> *); 
+    packet_info *build_question(dns_record *); 
     bool is_name_ptr(uint16_t *);
-    u_char *parse_label(dns_header *, vector<string> *, u_char *);
-    
+    u_char *encode_query_name(vector<string> *, int); 
+    int length_query_name(vector<string> *); 
+    int resolve(packet_info *);
+    bool is_returnable_record(dns_record *); 
+    vector<dns_record *> *find_returnable_record(dns_info *); 
+    void free_returnable_records(vector <dns_record *> *); 
+
 public:
+    DNS_Resolver();
+    ~DNS_Resolver();
+
     enum Flags {
         RCODE   = 0,
         ZERO    = 4,
@@ -35,21 +41,9 @@ public:
         OPCODE  = 11,
         QR      = 15 
     };
-
-    int select_call(int, int); 
-    static const string m_rootServerStrings[];
-    unsigned long m_rootServerBinary[13];
-    DNS_Resolver();
-    ~DNS_Resolver();
-    void *resolve(packet_info *);
-    void print_stats(dns_info *);
-    dns_question *parse_question(dns_header *);
-    void print_labels(vector<string> **, int);
+    
     int create_resolver_binding();
-    void setCurrentAddr(struct sockaddr_in6 *);
-    void build_empty_cache_response();
-    u_char *build_cache_response(dns_record *); 
-
+    void handle_query(packet_info *); 
 };
 
 #endif

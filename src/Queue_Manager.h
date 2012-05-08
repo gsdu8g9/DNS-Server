@@ -21,7 +21,7 @@ public:
     ~Queue_Manager();
 
     void enque(struct packet_info *);
-    struct packet_info *deque();
+    int deque(struct packet_info **);
     uint16_t size();
      
 };

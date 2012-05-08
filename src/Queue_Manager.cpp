@@ -4,15 +4,15 @@ using namespace SMA;
 Queue_Manager::Queue_Manager() 
     : m_queue(new SMA::deque<struct packet_info *>())
 {
-	 if ((m_semaphores[SEM_MUTEX] = sem_open("34211ablock", O_CREAT, 0644, 1)) == SEM_FAILED) {
+	 if ((m_semaphores[SEM_MUTEX] = sem_open("test1", O_CREAT, 0644, 1)) == SEM_FAILED) {
 		  perror("Semaphore full initialization");
 	 }
 
- 	 if ((m_semaphores[SEM_EMPTY] = sem_open("34211balock", O_CREAT, 0644, MAX_PACKET_CT)) == SEM_FAILED) {
+ 	 if ((m_semaphores[SEM_EMPTY] = sem_open("test2", O_CREAT, 0644, MAX_PACKET_CT)) == SEM_FAILED) {
 	 	  perror("Semaphore full initialization");
 	 } 
 
-	 if ((m_semaphores[SEM_FULL] = sem_open("34211cblock", O_CREAT, 0644, 0)) == SEM_FAILED) {
+	 if ((m_semaphores[SEM_FULL] = sem_open("test3", O_CREAT, 0644, 0)) == SEM_FAILED) {
 		  perror("Semaphore full initialization");
     }  
 }
@@ -31,20 +31,25 @@ void Queue_Manager::enque(struct packet_info *pkt_info) {
     m_queue->push_front(pkt_info);
 
     sem_post(m_semaphores[SEM_MUTEX]);
-    sem_post(m_semaphores[SEM_FULL]);	
+    sem_post(m_semaphores[SEM_FULL]);
 }
 
-struct packet_info *Queue_Manager::deque() {
+int Queue_Manager::deque(struct packet_info **info) {
     sem_wait(m_semaphores[SEM_FULL]);
     sem_wait(m_semaphores[SEM_MUTEX]);
+    
+    if (m_queue->size() == 0) {
+        sem_post(m_semaphores[SEM_MUTEX]);
+        return -1;
+    }
 
-    struct packet_info *pkt_info = m_queue->front();
+    *info = (packet_info *)(m_queue->front());
     m_queue->pop_front();
 
     sem_post(m_semaphores[SEM_MUTEX]);
-    sem_post(m_semaphores[SEM_EMPTY]);
+    sem_post(m_semaphores[SEM_FULL]);
 
-    return pkt_info;
+    return 1;
 }
 
 uint16_t Queue_Manager::size() {

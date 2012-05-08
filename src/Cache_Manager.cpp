@@ -42,10 +42,10 @@ struct dns_record *Cache_Manager::get(SMA::string key) {
     }
 
     if (ret_val != NULL) { 
-        int dom_len = (int)strlen((const char *)value->domain_name);
-        u_char *dom_cpy = (u_char *)calloc(dom_len, 1);
-        memcpy(dom_cpy, value->domain_name, dom_len);
-        ret_val->domain_name = dom_cpy;
+        //int dom_len = (int)strlen((const char *)value->domain_name);
+        //u_char *dom_cpy = (u_char *)calloc(dom_len, 1);
+        //memcpy(dom_cpy, value->domain_name, dom_len);
+        //ret_val->domain_name = dom_cpy;
     }
 
     return (struct dns_record *)0;
