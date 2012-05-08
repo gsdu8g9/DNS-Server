@@ -72,7 +72,6 @@ void smartalloc_track(char *data, unsigned long space, unsigned char needs_free,
 #include <string>
 #include <map>
 #include <list>
-#include <deque>
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 #include <unordered_map>
@@ -191,10 +190,6 @@ namespace SMA {
 
    template <class T> 
       class list : public std::list<T, STLsmartalloc<T> > {
-   };
-  
-   template <class T>
-      class deque : public std::deque<T, STLsmartalloc<T> > {
    };
 
    template <class Key, class Data, class Compare = std::less<Key> >

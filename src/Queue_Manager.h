@@ -13,7 +13,8 @@
 class Queue_Manager
 {
 private:
-    SMA::deque <struct packet_info *> *m_queue;
+
+std::deque <struct packet_info *, STLsmartalloc<packet_info *> > *m_queue;
     sem_t *m_semaphores[3];
 
 public: 

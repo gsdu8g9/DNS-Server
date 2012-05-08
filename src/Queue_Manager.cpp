@@ -2,7 +2,7 @@
 using namespace SMA;
 
 Queue_Manager::Queue_Manager() 
-    : m_queue(new SMA::deque<struct packet_info *>())
+    : m_queue(new std::deque<packet_info *, STLsmartalloc<packet_info *> >())
 {
 	 if ((m_semaphores[SEM_MUTEX] = sem_open("test1", O_CREAT, 0644, 1)) == SEM_FAILED) {
 		  perror("Semaphore full initialization");
